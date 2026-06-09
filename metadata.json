@@ -1,0 +1,6 @@
+{
+  "name": "Production Queue Manager",
+  "description": "Sistem manajemen antrean produksi multiplatform real-time dengan rute produk berantai otomatis, urutan prioritas deadline, booster urgensi, dan deteksi kendala.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

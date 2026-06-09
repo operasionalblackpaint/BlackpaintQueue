@@ -1,0 +1,65 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Global Default Deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Hardened Global Helpers
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\- ()/]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function isValidOrder(data) {
+      return data.id_order is string && data.id_order.size() <= 128
+        && data.nama_customer is string && data.nama_customer.size() <= 256
+        && data.nama_produk is string && data.nama_produk.size() <= 256
+        && data.jumlah is int
+        && data.tanggal_input is string
+        && data.datetime_deadline is string
+        && data.status_rute_sekarang is int
+        && data.status_kendala is bool
+        && data.is_booster is bool;
+    }
+
+    function isValidMasterRute(data) {
+      return data.id_produk is string && data.id_produk.size() <= 128
+        && data.nama_produk is string && data.nama_produk.size() <= 256
+        && data.alur_divisi is list;
+    }
+
+    function isValidAdminApprover(data) {
+      return data.id is string && data.id.size() <= 128
+        && data.nama is string && data.nama.size() <= 256;
+    }
+
+    // Orders Collection Rules
+    match /prod_queue_orders/{id_order} {
+      allow get: if isValidId(id_order);
+      allow list: if true; // Evaluates query on the collection securely
+      allow create: if isValidId(id_order) && isValidOrder(incoming());
+      allow update: if isValidId(id_order) && isValidOrder(incoming());
+      allow delete: if true;
+    }
+
+    // Master Route Collection Rules
+    match /master_rute_produk/{id_produk} {
+      allow get: if isValidId(id_produk);
+      allow list: if true; // Evaluates query on the collection securely
+      allow create: if isValidId(id_produk) && isValidMasterRute(incoming());
+      allow update: if isValidId(id_produk) && isValidMasterRute(incoming());
+      allow delete: if true;
+    }
+
+    // Master Admin Approver Rules
+    match /master_admin_approvers/{id} {
+      allow read, write: if true;
+    }
+  }
+}

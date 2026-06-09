@@ -1,0 +1,61 @@
+{
+  "entities": {
+    "Order": {
+      "title": "Order",
+      "description": "Antrean Pesanan Rantai Produksi",
+      "type": "object",
+      "properties": {
+        "id_order": { "type": "string" },
+        "nama_customer": { "type": "string" },
+        "nama_produk": { "type": "string" },
+        "jumlah": { "type": "integer" },
+        "tanggal_input": { "type": "string", "format": "date-time" },
+        "datetime_deadline": { "type": "string", "format": "date-time" },
+        "status_rute_sekarang": { "type": "integer" },
+        "status_kendala": { "type": "boolean" },
+        "jenis_kendala": { "type": "string", "enum": ["Mesin Eror", "Bahan Rusak", "File Corrupt", ""] },
+        "is_booster": { "type": "boolean" },
+        "notes": { "type": "string" },
+        "is_archived": { "type": "boolean" },
+        "nama_approve": { "type": "string" },
+        "acc_operator": { "type": "string" }
+      },
+      "required": ["id_order", "nama_customer", "nama_produk", "jumlah", "tanggal_input", "datetime_deadline", "status_rute_sekarang", "status_kendala", "is_booster"]
+    },
+    "MasterRuteProduk": {
+      "title": "MasterRuteProduk",
+      "description": "Rantai Alur Rute Divisi per Produk",
+      "type": "object",
+      "properties": {
+        "id_produk": { "type": "string" },
+        "nama_produk": { "type": "string" },
+        "alur_divisi": { "type": "array" }
+      },
+      "required": ["id_produk", "nama_produk", "alur_divisi"]
+    },
+    "AdminApprover": {
+      "title": "AdminApprover",
+      "description": "Nama Approve Admin yang dikonfigurasi di operasional",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "nama": { "type": "string" }
+      },
+      "required": ["id", "nama"]
+    }
+  },
+  "firestore": {
+    "/prod_queue_orders/{id_order}": {
+      "schema": "Order",
+      "description": "Koleksi data antrean pesanan aktif dan terarsipkan"
+    },
+    "/master_rute_produk/{id_produk}": {
+      "schema": "MasterRuteProduk",
+      "description": "Tabel master rute alur produksi per produk"
+    },
+    "/master_admin_approvers/{id}": {
+      "schema": "AdminApprover",
+      "description": "Daftar nama approve yang bisa dipilih admin"
+    }
+  }
+}
